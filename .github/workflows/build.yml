@@ -26,7 +26,7 @@ jobs:
           - rock-5b
           - rock-5a
           - rock-5c
-          - rock-5bp
+          - rock-5bplus
           - rock-5-itx
           - radxa-cm5
           - orangepi-5
