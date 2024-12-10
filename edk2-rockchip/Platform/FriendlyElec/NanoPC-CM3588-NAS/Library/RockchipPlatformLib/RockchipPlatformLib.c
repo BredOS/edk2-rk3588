@@ -11,6 +11,7 @@
 #include <Library/GpioLib.h>
 #include <Library/RK806.h>
 #include <Library/Rk3588Pcie.h>
+#include <Library/PWMLib.h>
 #include <Soc.h>
 
 static struct regulator_init_data rk806_init_data[] = {
@@ -170,22 +171,26 @@ I2cIomux (
   case 1:
     break;
   case 2:
-    GpioPinSetFunction(0, GPIO_PIN_PB7, 9); //i2c2_scl_m0
-    GpioPinSetFunction(0, GPIO_PIN_PC0, 9); //i2c2_sda_m0
     break;
   case 3:
-    GpioPinSetFunction(1, GPIO_PIN_PC1, 9); //i2c3_scl_m0
-    GpioPinSetFunction(1, GPIO_PIN_PC0, 9); //i2c3_sda_m0
     break;
   case 4:
+    GpioPinSetFunction(1, GPIO_PIN_PA3, 9); //i2c4_scl_m3
+    GpioPinSetFunction(1, GPIO_PIN_PA2, 9); //i2c4_sda_m3
     break;
   case 5:
+    GpioPinSetFunction(3, GPIO_PIN_PC7, 9); //i2c5_scl_m0
+    GpioPinSetFunction(3, GPIO_PIN_PD0, 9); //i2c5_sda_m0
     break;
   case 6:
     GpioPinSetFunction(0, GPIO_PIN_PD0, 9); //i2c6_scl_m0
     GpioPinSetFunction(0, GPIO_PIN_PC7, 9); //i2c6_sda_m0
     break;
   case 7:
+    break;
+  case 8:
+    GpioPinSetFunction(1, GPIO_PIN_PD6, 9); //i2c8_scl_m2
+    GpioPinSetFunction(1, GPIO_PIN_PD7, 9); //i2c8_sda_m2
     break;
   default:
     break;
@@ -199,21 +204,19 @@ UsbPortPowerEnable (
   )
 {
   DEBUG((DEBUG_INFO, "UsbPortPowerEnable called\n"));
-  /* Set GPIO4 PB0 (USB_HOST_PWREN) output high to power USB ports */
+  /* The "pinctrl/usb" section in the dts lists three _en pins for power.
+     They appear to correspond to the three usb ports on the NAS carrier board. */
+  GpioPinWrite (1, GPIO_PIN_PA4, TRUE);
+  GpioPinSetDirection (1, GPIO_PIN_PA4, GPIO_PIN_OUTPUT);
   GpioPinWrite (4, GPIO_PIN_PB0, TRUE);
   GpioPinSetDirection (4, GPIO_PIN_PB0, GPIO_PIN_OUTPUT);
-
-  /* Set GPIO4 PC6 output high to power the 4G/LTE module */
-  GpioPinWrite (4, GPIO_PIN_PC6, TRUE);
-  GpioPinSetDirection (4, GPIO_PIN_PC6, GPIO_PIN_OUTPUT);
+  GpioPinWrite (3, GPIO_PIN_PA5, TRUE);
+  GpioPinSetDirection (3, GPIO_PIN_PA5, GPIO_PIN_OUTPUT);
 
   /* Set GPIO1 PD2 (TYPEC5V_PWREN) output high to power the type-c port */
   GpioPinWrite (1, GPIO_PIN_PD2, TRUE);
   GpioPinSetDirection (1, GPIO_PIN_PD2, GPIO_PIN_OUTPUT);
 
-  /* Set GPIO1 PA4 (USB20_HOST_PWREN) output high to power USB 2.0 ports */
-  GpioPinWrite (1, GPIO_PIN_PA4, TRUE);
-  GpioPinSetDirection (1, GPIO_PIN_PA4, GPIO_PIN_OUTPUT);
   // DEBUG((DEBUG_INFO, "Trying to enable on-board LED1\n"));
   // GpioPinWrite (2, GPIO_PIN_PC0, TRUE);
   // GpioPinSetDirection (2, GPIO_PIN_PC0, GPIO_PIN_OUTPUT);
@@ -243,13 +246,14 @@ PcieIoInit (
   switch(Segment) {
     case PCIE_SEGMENT_PCIE30X4:
       GpioPinSetDirection (4, GPIO_PIN_PB6, GPIO_PIN_OUTPUT);
-      GpioPinSetDirection (2, GPIO_PIN_PC5, GPIO_PIN_OUTPUT);
       break;
-    case PCIE_SEGMENT_PCIE20L0: // rtl8152b
+    case PCIE_SEGMENT_PCIE30X2:
       GpioPinSetDirection (4, GPIO_PIN_PB3, GPIO_PIN_OUTPUT);
       break;
+    case PCIE_SEGMENT_PCIE20L0: // rtl8152b
+      GpioPinSetDirection (4, GPIO_PIN_PB4, GPIO_PIN_OUTPUT);
+      break;
     case PCIE_SEGMENT_PCIE20L1: // m.2 a+e key
-      GpioPinSetDirection (4, GPIO_PIN_PC2, GPIO_PIN_OUTPUT);
       GpioPinSetDirection (4, GPIO_PIN_PA2, GPIO_PIN_OUTPUT);
       break;
     case PCIE_SEGMENT_PCIE20L2: //rtl8152b
@@ -271,12 +275,10 @@ PciePowerEn (
 
   switch(Segment) {
     case PCIE_SEGMENT_PCIE30X4:
-      GpioPinWrite (2, GPIO_PIN_PC5, Enable);
       break;
     case PCIE_SEGMENT_PCIE20L0:
       break;
     case PCIE_SEGMENT_PCIE20L1:
-      GpioPinWrite (4, GPIO_PIN_PC2, Enable);
       break;
     case PCIE_SEGMENT_PCIE20L2:
       break;
@@ -296,8 +298,11 @@ PciePeReset (
     case PCIE_SEGMENT_PCIE30X4:
       GpioPinWrite (4, GPIO_PIN_PB6, !Enable);
       break;
-    case PCIE_SEGMENT_PCIE20L0:
+    case PCIE_SEGMENT_PCIE30X2:
       GpioPinWrite (4, GPIO_PIN_PB3, !Enable);
+      break;
+    case PCIE_SEGMENT_PCIE20L0:
+      GpioPinWrite (4, GPIO_PIN_PB4, !Enable);
       break;
     case PCIE_SEGMENT_PCIE20L1:
       GpioPinWrite (4, GPIO_PIN_PA2, !Enable);
@@ -310,12 +315,23 @@ PciePeReset (
   }
 }
 
+PWM_DATA pwm_data = {
+  .ControllerID = PWM_CONTROLLER0,
+  .ChannelID = PWM_CHANNEL1,
+  .PeriodNs = 4000000,
+  .DutyNs = 4000000,
+  .Polarity = FALSE,
+}; // PWM0_CH1
+
 VOID
 EFIAPI
 PwmFanIoSetup (
   VOID
   )
 {
+  GpioPinSetFunction (1, GPIO_PIN_PD3, 0xB); // PWM1_M1
+  RkPwmSetConfig (&pwm_data);
+  RkPwmEnable (&pwm_data);
 }
 
 VOID
@@ -324,7 +340,10 @@ PwmFanSetSpeed (
   IN UINT32 Percentage
   )
 {
+  pwm_data.DutyNs = pwm_data.PeriodNs * Percentage / 100;
+  RkPwmSetConfig (&pwm_data);
 }
+
 
 VOID
 EFIAPI
@@ -333,8 +352,8 @@ PlatformInitLeds (
   )
 {
   /* Status indicator */
-  GpioPinWrite (2, GPIO_PIN_PB7, FALSE);
-  GpioPinSetDirection (2, GPIO_PIN_PB7, GPIO_PIN_OUTPUT);
+  GpioPinWrite (1, GPIO_PIN_PC6, FALSE);
+  GpioPinSetDirection (1, GPIO_PIN_PC6, GPIO_PIN_OUTPUT);
 }
 
 VOID
@@ -343,7 +362,7 @@ PlatformSetStatusLed (
   IN BOOLEAN Enable
   )
 {
-  GpioPinWrite (2, GPIO_PIN_PB7, Enable);
+  GpioPinWrite (1, GPIO_PIN_PC6, Enable);
 }
 
 VOID
@@ -353,5 +372,5 @@ PlatformEarlyInit (
   )
 {
   // Configure various things specific to this platform
-  GpioPinSetFunction(1, GPIO_PIN_PC4, 0); //jdet
+  // GpioPinSetFunction(1, GPIO_PIN_PC4, 0); //jdet
 }

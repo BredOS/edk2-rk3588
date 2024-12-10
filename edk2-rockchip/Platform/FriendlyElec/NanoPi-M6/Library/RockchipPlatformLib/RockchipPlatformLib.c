@@ -36,7 +36,6 @@ static struct regulator_init_data rk806_init_data[] = {
   RK8XX_VOLTAGE_INIT(MASTER_PLDO4, 3300000),
   RK8XX_VOLTAGE_INIT(MASTER_PLDO5, 3300000),
   RK8XX_VOLTAGE_INIT(MASTER_PLDO6, 1800000),
-
   /* No dual PMICs on this platform */
 };
 
@@ -115,25 +114,7 @@ NorFspiIomux (
   )
 {
   /* io mux */
-  MmioWrite32(NS_CRU_BASE + CRU_CLKSEL_CON78,
-             (((0x3 << 12) | (0x3f << 6)) << 16) | (0x0 << 12) | (0x3f << 6));
-#define FSPI_M1
-#if defined(FSPI_M0)
-   /*FSPI M0*/
-  BUS_IOC->GPIO2A_IOMUX_SEL_L = ((0xF << 0) << 16) | (2 << 0); //FSPI_CLK_M0
-  BUS_IOC->GPIO2D_IOMUX_SEL_L = (0xFFFFUL << 16) | (0x2222); //FSPI_D0_M0,FSPI_D1_M0,FSPI_D2_M0,FSPI_D3_M0
-  BUS_IOC->GPIO2D_IOMUX_SEL_H = ((0xF << 8) << 16) | (0x2 << 8); //FSPI_CS0N_M0
-#elif defined(FSPI_M1)
-  /*FSPI M1*/
-  BUS_IOC->GPIO2A_IOMUX_SEL_H = (0xFF00UL << 16) | (0x3300); //FSPI_D0_M1,FSPI_D1_M1
-  BUS_IOC->GPIO2B_IOMUX_SEL_L = (0xF0FFUL << 16) | (0x3033); //FSPI_D2_M1,FSPI_D3_M1,FSPI_CLK_M1
-  BUS_IOC->GPIO2B_IOMUX_SEL_H = (0xF << 16) | (0x3); //FSPI_CS0N_M1
-#else
-  /*FSPI M2*/
-  BUS_IOC->GPIO3A_IOMUX_SEL_L = (0xFFFFUL << 16) | (0x5555); //[FSPI_D0_M2-FSPI_D3_M2]
-  BUS_IOC->GPIO3A_IOMUX_SEL_H = (0xF0UL << 16) | (0x50); //FSPI_CLK_M2
-  BUS_IOC->GPIO3C_IOMUX_SEL_H = (0xF << 16) | (0x2); //FSPI_CS0_M2
-#endif
+  /* Do not override, set by earlier boot stages. */
 }
 
 VOID
@@ -142,7 +123,38 @@ GmacIomux (
   IN UINT32 Id
   )
 {
-  /* No GMAC here */
+  switch (Id) {
+    case 1:
+      /* gmac1 iomux */
+      BUS_IOC->GPIO3B_IOMUX_SEL_H = (0x0FFFUL << 16) | 0x0111;
+      BUS_IOC->GPIO3A_IOMUX_SEL_L = (0xFFFFUL << 16) | 0x1111;
+      BUS_IOC->GPIO3B_IOMUX_SEL_L = (0xF0FFUL << 16) | 0x1011;
+      BUS_IOC->GPIO3A_IOMUX_SEL_H = (0xF0FFUL << 16) | 0x1011;
+      BUS_IOC->GPIO3C_IOMUX_SEL_L = (0xFF00UL << 16) | 0x1100;
+
+      /* phy1 reset */
+      GpioPinSetDirection (3, GPIO_PIN_PB7, GPIO_PIN_OUTPUT);
+      break;
+    default:
+      break;
+  }
+}
+
+VOID
+EFIAPI
+GmacIoPhyReset (
+  UINT32   Id,
+  BOOLEAN  Enable
+  )
+{
+  switch (Id) {
+    case 1:
+      /* phy1 reset */
+      GpioPinWrite (3, GPIO_PIN_PB7, !Enable);
+      break;
+    default:
+      break;
+  }
 }
 
 VOID
@@ -199,24 +211,25 @@ UsbPortPowerEnable (
   )
 {
   DEBUG((DEBUG_INFO, "UsbPortPowerEnable called\n"));
-  /* Set GPIO4 PB0 (USB_HOST_PWREN) output high to power USB ports */
-  GpioPinWrite (4, GPIO_PIN_PB0, TRUE);
-  GpioPinSetDirection (4, GPIO_PIN_PB0, GPIO_PIN_OUTPUT);
-
-  /* Set GPIO4 PC6 output high to power the 4G/LTE module */
-  GpioPinWrite (4, GPIO_PIN_PC6, TRUE);
-  GpioPinSetDirection (4, GPIO_PIN_PC6, GPIO_PIN_OUTPUT);
+  /* Set GPIO4 PB5 (USB_HOST_PWREN) output high to power USB ports */
+  GpioPinWrite (4, GPIO_PIN_PB5, TRUE);
+  GpioPinSetDirection (4, GPIO_PIN_PB5, GPIO_PIN_OUTPUT);
 
   /* Set GPIO1 PD2 (TYPEC5V_PWREN) output high to power the type-c port */
   GpioPinWrite (1, GPIO_PIN_PD2, TRUE);
   GpioPinSetDirection (1, GPIO_PIN_PD2, GPIO_PIN_OUTPUT);
 
-  /* Set GPIO1 PA4 (USB20_HOST_PWREN) output high to power USB 2.0 ports */
-  GpioPinWrite (1, GPIO_PIN_PA4, TRUE);
-  GpioPinSetDirection (1, GPIO_PIN_PA4, GPIO_PIN_OUTPUT);
+  // DEBUG((DEBUG_INFO, "Trying to enable on-board LED WAN\n"));
+  // GpioPinWrite (1, GPIO_PIN_PC2, TRUE);
+  // GpioPinSetDirection (1, GPIO_PIN_PC2, GPIO_PIN_OUTPUT);
+
+  // DEBUG((DEBUG_INFO, "Trying to enable on-board LED LAN\n"));
+  // GpioPinWrite (1, GPIO_PIN_PC3, TRUE);
+  // GpioPinSetDirection (1, GPIO_PIN_PC3, GPIO_PIN_OUTPUT);
+
   // DEBUG((DEBUG_INFO, "Trying to enable on-board LED1\n"));
-  // GpioPinWrite (2, GPIO_PIN_PC0, TRUE);
-  // GpioPinSetDirection (2, GPIO_PIN_PC0, GPIO_PIN_OUTPUT);
+  // GpioPinWrite (1, GPIO_PIN_PC4, TRUE);
+  // GpioPinSetDirection (1, GPIO_PIN_PC4, GPIO_PIN_OUTPUT);
 }
 
 VOID
@@ -241,19 +254,13 @@ PcieIoInit (
 {
   /* Set reset and power IO to gpio output mode */
   switch(Segment) {
-    case PCIE_SEGMENT_PCIE30X4:
-      GpioPinSetDirection (4, GPIO_PIN_PB6, GPIO_PIN_OUTPUT);
-      GpioPinSetDirection (2, GPIO_PIN_PC5, GPIO_PIN_OUTPUT);
+    case PCIE_SEGMENT_PCIE20L1: // RTL8152BG
+      // GPIO1_A7_u - PCIE20x1_1_PERSTn_M2
+      GpioPinSetDirection (1, GPIO_PIN_PA7, GPIO_PIN_OUTPUT);
       break;
-    case PCIE_SEGMENT_PCIE20L0: // rtl8152b
-      GpioPinSetDirection (4, GPIO_PIN_PB3, GPIO_PIN_OUTPUT);
-      break;
-    case PCIE_SEGMENT_PCIE20L1: // m.2 a+e key
-      GpioPinSetDirection (4, GPIO_PIN_PC2, GPIO_PIN_OUTPUT);
-      GpioPinSetDirection (4, GPIO_PIN_PA2, GPIO_PIN_OUTPUT);
-      break;
-    case PCIE_SEGMENT_PCIE20L2: //rtl8152b
-      GpioPinSetDirection (4, GPIO_PIN_PA4, GPIO_PIN_OUTPUT);
+    case PCIE_SEGMENT_PCIE20L2: // M.2 SSD
+      // GPIO3_D1_d - PCIE20X1_2_PERSTN_M0
+      GpioPinSetDirection (3, GPIO_PIN_PD1, GPIO_PIN_OUTPUT);
       break;
     default:
       break;
@@ -267,22 +274,7 @@ PciePowerEn (
   BOOLEAN Enable
   )
 {
-  /* output high to enable power */
-
-  switch(Segment) {
-    case PCIE_SEGMENT_PCIE30X4:
-      GpioPinWrite (2, GPIO_PIN_PC5, Enable);
-      break;
-    case PCIE_SEGMENT_PCIE20L0:
-      break;
-    case PCIE_SEGMENT_PCIE20L1:
-      GpioPinWrite (4, GPIO_PIN_PC2, Enable);
-      break;
-    case PCIE_SEGMENT_PCIE20L2:
-      break;
-    default:
-      break;
-  }
+  /* nothing to power on */
 }
 
 VOID
@@ -293,17 +285,11 @@ PciePeReset (
   )
 {
   switch(Segment) {
-    case PCIE_SEGMENT_PCIE30X4:
-      GpioPinWrite (4, GPIO_PIN_PB6, !Enable);
-      break;
-    case PCIE_SEGMENT_PCIE20L0:
-      GpioPinWrite (4, GPIO_PIN_PB3, !Enable);
-      break;
     case PCIE_SEGMENT_PCIE20L1:
-      GpioPinWrite (4, GPIO_PIN_PA2, !Enable);
+      GpioPinWrite (1, GPIO_PIN_PA7, !Enable);
       break;
     case PCIE_SEGMENT_PCIE20L2:
-      GpioPinWrite (4, GPIO_PIN_PA4, !Enable);
+      GpioPinWrite (3, GPIO_PIN_PD1, !Enable);
       break;
     default:
       break;
@@ -333,8 +319,8 @@ PlatformInitLeds (
   )
 {
   /* Status indicator */
-  GpioPinWrite (2, GPIO_PIN_PB7, FALSE);
-  GpioPinSetDirection (2, GPIO_PIN_PB7, GPIO_PIN_OUTPUT);
+  GpioPinWrite (1, GPIO_PIN_PC1, FALSE);
+  GpioPinSetDirection (1, GPIO_PIN_PC1, GPIO_PIN_OUTPUT);
 }
 
 VOID
@@ -343,7 +329,7 @@ PlatformSetStatusLed (
   IN BOOLEAN Enable
   )
 {
-  GpioPinWrite (2, GPIO_PIN_PB7, Enable);
+  GpioPinWrite (1, GPIO_PIN_PC1, Enable);
 }
 
 VOID
@@ -353,5 +339,4 @@ PlatformEarlyInit (
   )
 {
   // Configure various things specific to this platform
-  GpioPinSetFunction(1, GPIO_PIN_PC4, 0); //jdet
 }

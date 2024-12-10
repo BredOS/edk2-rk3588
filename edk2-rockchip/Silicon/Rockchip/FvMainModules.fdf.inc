@@ -1,7 +1,7 @@
 ## @file
 #
 #  Copyright (c) 2021-2022, Rockchip Limited. All rights reserved.
-#  Copyright (c) 2023, Mario Bălănică <mariobalanica02@gmail.com>
+#  Copyright (c) 2023-2024, Mario Bălănică <mariobalanica02@gmail.com>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -206,6 +206,11 @@
 !endif
 
   #
+  # EFI Memory Attribute Protocol state manager (rhboot shim workaround)
+  #
+  INF EmbeddedPkg/Drivers/MemoryAttributeManagerDxe/MemoryAttributeManagerDxe.inf
+
+  #
   # Bds
   #
   INF MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
@@ -227,3 +232,6 @@
 
   # SPI Flash Cmd application
   # INF Silicon/Rockchip/Applications/SpiTool/SpiFlashCmd.inf
+
+  # Maskrom Reset application
+  INF Silicon/Rockchip/Applications/MaskromReset/MaskromReset.inf
