@@ -2,7 +2,7 @@
 #
 #  Copyright (c) 2014-2018, Linaro Limited. All rights reserved.
 #  Copyright (c) 2022, Xilin Wu <wuxilin123@gmail.com>
-#  Copyright (c) 2023, Mario Bălănică <mariobalanica02@gmail.com>
+#  Copyright (c) 2023-2024, Mario Bălănică <mariobalanica02@gmail.com>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -87,6 +87,8 @@
   #
   # PCIe/SATA/USB Combo PIPE PHY support flags and default values
   #
+  gRK3588TokenSpaceGuid.PcdPcie30PhyModeDefault|$(PCIE30_PHY_MODE_NANBNB)
+  gRK3588TokenSpaceGuid.PcdPcie30x2Supported|TRUE
   gRK3588TokenSpaceGuid.PcdComboPhy0Switchable|FALSE
   gRK3588TokenSpaceGuid.PcdComboPhy1Switchable|FALSE
   gRK3588TokenSpaceGuid.PcdComboPhy2Switchable|FALSE
@@ -100,7 +102,7 @@
   gRK3588TokenSpaceGuid.PcdUsbDpPhy0Supported|TRUE
   gRK3588TokenSpaceGuid.PcdUsbDpPhy1Supported|TRUE
   gRK3588TokenSpaceGuid.PcdDp0LaneMux|{ 0x2, 0x3 }
-  gRK3588TokenSpaceGuid.PcdDp1LaneMux|{ 0x0 } 
+  gRK3588TokenSpaceGuid.PcdDp1LaneMux|{ 0x0 }
 
   #
   # I2S
@@ -121,6 +123,10 @@
 [Components.common]
   # ACPI Support
   $(PLATFORM_DIRECTORY)/AcpiTables/AcpiTables.inf
+
+  # Device Tree Support
+  $(PLATFORM_DIRECTORY)/DeviceTree/Vendor.inf
+  $(PLATFORM_DIRECTORY)/DeviceTree/Mainline.inf
 
   # Splash screen logo
   $(VENDOR_DIRECTORY)/Drivers/LogoDxe/LogoDxe.inf

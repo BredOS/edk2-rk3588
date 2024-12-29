@@ -35,6 +35,12 @@
   DEFINE COMBO_PHY_MODE_SATA          = 2
   DEFINE COMBO_PHY_MODE_USB3          = 3
 
+  DEFINE PCIE30_PHY_MODE_AGGREGATION  = 4
+  DEFINE PCIE30_PHY_MODE_NANBNB       = 0
+  DEFINE PCIE30_PHY_MODE_NANBBI       = 1
+  DEFINE PCIE30_PHY_MODE_NABINB       = 2
+  DEFINE PCIE30_PHY_MODE_NABIBI       = 3
+
   DEFINE COOLING_FAN_STATE_DISABLED   = 0
   DEFINE COOLING_FAN_STATE_ENABLED    = 1
 
@@ -50,6 +56,10 @@
   DEFINE ACPI_PCIE_ECAM_COMPAT_MODE_GRAVITON              = 0x00000004
   DEFINE ACPI_PCIE_ECAM_COMPAT_MODE_NXPMX6_SINGLE_DEV     = 0x00000003
   DEFINE ACPI_PCIE_ECAM_COMPAT_MODE_NXPMX6_GRAVITON       = 0x00000006
+
+  DEFINE FDT_COMPAT_MODE_UNSUPPORTED    = 0
+  DEFINE FDT_COMPAT_MODE_VENDOR         = 1
+  DEFINE FDT_COMPAT_MODE_MAINLINE       = 2
 
   #
   # Silicon/Rockchip/RK3588/Drivers/RK3588Dxe/CpuPerformance.h
@@ -105,6 +115,9 @@
   SerialPortLib|Silicon/Rockchip/Library/Dw8250SerialPortLib/Dw8250SerialPortLib.inf
 
 [LibraryClasses.common]
+  # Custom reset handler
+  ResetSystemLib|Silicon/Rockchip/RK3588/Library/ResetSystemLib/ResetSystemLib.inf
+
   # ACPI helpers
   AcpiLib|EmbeddedPkg/Library/AcpiLib/AcpiLib.inf
 
@@ -130,8 +143,10 @@
   DwcSdhciPlatformLib|Silicon/Rockchip/RK3588/Library/DwcSdhciPlatformLib/DwcSdhciPlatformLib.inf
 
   # Other SoC-specific libraries
+  PlatformCruLib|Silicon/Rockchip/RK3588/Library/Rk3588CruLib/Rk3588CruLib.inf
   OtpLib|Silicon/Rockchip/RK3588/Library/OtpLib/OtpLib.inf
   GpioLib|Silicon/Rockchip/RK3588/Library/GpioLib/GpioLib.inf
+  SaradcLib|Silicon/Rockchip/RK3588/Library/SaradcLib/SaradcLib.inf
 
 [LibraryClasses.common.SEC]
   MemoryInitPeiLib|Silicon/Rockchip/RK3588/Library/MemoryInitPeiLib/MemoryInitPeiLib.inf
@@ -259,12 +274,18 @@
   # PCI Express 3.0 support flags and default values
   #
   gRK3588TokenSpaceGuid.PcdPcie30Supported|FALSE
-  gRK3588TokenSpaceGuid.PcdPcie30PhyModeDefault|4 # AGGREGATION
+  gRK3588TokenSpaceGuid.PcdPcie30x2Supported|FALSE
+  gRK3588TokenSpaceGuid.PcdPcie30PhyModeSwitchable|FALSE
+  gRK3588TokenSpaceGuid.PcdPcie30PhyModeDefault|$(PCIE30_PHY_MODE_AGGREGATION)
 
   #
-  # ACPI support flags and default values
+  # ACPI / Device Tree support flags and default values
   #
+  gRK3588TokenSpaceGuid.PcdConfigTableModeDefault|$(CONFIG_TABLE_MODE_ACPI_FDT)
   gRK3588TokenSpaceGuid.PcdAcpiPcieEcamCompatModeDefault|$(ACPI_PCIE_ECAM_COMPAT_MODE_NXPMX6_SINGLE_DEV)
+  gRK3588TokenSpaceGuid.PcdFdtCompatModeDefault|$(FDT_COMPAT_MODE_MAINLINE)
+  gRK3588TokenSpaceGuid.PcdFdtForceGopDefault|FALSE
+  gRK3588TokenSpaceGuid.PcdFdtSupportOverridesDefault|FALSE
 
 [PcdsPatchableInModule]
   gEfiMdePkgTokenSpaceGuid.PcdUartDefaultBaudRate|1500000
@@ -275,8 +296,10 @@
   #
   gEfiMdeModulePkgTokenSpaceGuid.PcdVideoHorizontalResolution|0
   gEfiMdeModulePkgTokenSpaceGuid.PcdVideoVerticalResolution|0
-  gEfiMdeModulePkgTokenSpaceGuid.PcdConOutRow|0
-  gEfiMdeModulePkgTokenSpaceGuid.PcdConOutColumn|0
+  gEfiMdeModulePkgTokenSpaceGuid.PcdConOutColumn|100
+  gEfiMdeModulePkgTokenSpaceGuid.PcdConOutRow|31
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutColumn|100
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSetupConOutRow|31
 
 [PcdsDynamicHii.common.DEFAULT]
   #
@@ -306,14 +329,16 @@
   # PCI Express 3.0
   #
   gRK3588TokenSpaceGuid.PcdPcie30State|L"Pcie30State"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdPcie30Supported
-  gRK3588TokenSpaceGuid.PcdPcie30PhyMode|L"Pcie30PhyMode"|gRK3588DxeFormSetGuid|0x0|4 # AGGREGATION
+  gRK3588TokenSpaceGuid.PcdPcie30PhyMode|L"Pcie30PhyMode"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdPcie30PhyModeDefault
 
   #
   # ACPI / Device Tree
   #
-  gRK3588TokenSpaceGuid.PcdConfigTableMode|L"ConfigTableMode"|gRK3588DxeFormSetGuid|0x0|$(CONFIG_TABLE_MODE_ACPI)
+  gRK3588TokenSpaceGuid.PcdConfigTableMode|L"ConfigTableMode"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdConfigTableModeDefault
   gRK3588TokenSpaceGuid.PcdAcpiPcieEcamCompatMode|L"AcpiPcieEcamCompatMode"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdAcpiPcieEcamCompatModeDefault
-  gRK3588TokenSpaceGuid.PcdFdtSupportOverrides|L"FdtSupportOverrides"|gRK3588DxeFormSetGuid|0x0|FALSE
+  gRK3588TokenSpaceGuid.PcdFdtCompatMode|L"FdtCompatMode"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdFdtCompatModeDefault
+  gRK3588TokenSpaceGuid.PcdFdtForceGop|L"FdtForceGop"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdFdtForceGopDefault
+  gRK3588TokenSpaceGuid.PcdFdtSupportOverrides|L"FdtSupportOverrides"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdFdtSupportOverridesDefault
 
   #
   # Cooling Fan
@@ -335,11 +360,6 @@
 [Components.common]
   # General platform manager
   Silicon/Rockchip/RK3588/Drivers/RK3588Dxe/RK3588Dxe.inf
-
-  #
-  # Custom reset handler
-  #
-  Silicon/Rockchip/RK3588/Drivers/ResetPlatformDxe/ResetPlatformDxe.inf
 
   #
   # PCI Support

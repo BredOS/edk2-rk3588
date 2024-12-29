@@ -138,7 +138,7 @@ function _build(){
 
     export GCC_AARCH64_PREFIX="${CROSS_COMPILE}"
     export CLANG38_AARCH64_PREFIX="${CROSS_COMPILE}"
-    export PACKAGES_PATH="${ROOTDIR}/edk2:${ROOTDIR}/edk2-platforms:${ROOTDIR}/edk2-rockchip:${ROOTDIR}/edk2-rockchip-non-osi:${ROOTDIR}/edk2-non-osi:${ROOTDIR}"
+    export PACKAGES_PATH="${ROOTDIR}/edk2:${ROOTDIR}/edk2-platforms:${ROOTDIR}/edk2-rockchip:${ROOTDIR}/devicetree:${ROOTDIR}/edk2-non-osi:${ROOTDIR}"
 
     make -C "${ROOTDIR}/edk2/BaseTools"
     source "${ROOTDIR}/edk2/edksetup.sh"
@@ -151,6 +151,7 @@ function _build(){
         -p "${ROOTDIR}/${DSC_FILE}" \
         -b "${RELEASE_TYPE}" \
         -D FIRMWARE_VER="${GIT_COMMIT}" \
+        --pcd gRockchipTokenSpaceGuid.PcdFitImageFlashAddress=0x100000 \
         ${EDK2_FLAGS}
 
     #
