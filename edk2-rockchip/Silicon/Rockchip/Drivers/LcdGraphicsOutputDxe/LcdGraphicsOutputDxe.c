@@ -503,8 +503,15 @@ LcdGraphicsQueryMode (
   *SizeOfInfo = sizeof (EFI_GRAPHICS_OUTPUT_MODE_INFORMATION);
 
   (*Info)->Version = 0;
-  (*Info)->HorizontalResolution = mDisplayModes[ModeNumber].Horizontal.Resolution;
-  (*Info)->VerticalResolution = mDisplayModes[ModeNumber].Vertical.Resolution;
+
+  if (FixedPcdGetBool (PcdLcdRotateToLandscape)) {
+    (*Info)->HorizontalResolution = mDisplayModes[ModeNumber].Vertical.Resolution;
+    (*Info)->VerticalResolution = mDisplayModes[ModeNumber].Horizontal.Resolution;
+  } else {
+    (*Info)->HorizontalResolution = mDisplayModes[ModeNumber].Horizontal.Resolution;
+    (*Info)->VerticalResolution = mDisplayModes[ModeNumber].Vertical.Resolution;
+  }
+
   (*Info)->PixelsPerScanLine = mDisplayModes[ModeNumber].Horizontal.Resolution;
   (*Info)->PixelFormat = FixedPcdGet32 (PcdLcdPixelFormat);
 
@@ -597,8 +604,15 @@ LcdGraphicsSetMode (
   This->Mode->Mode = ModeNumber;
 
   Instance->ModeInfo.Version = 0;
-  Instance->ModeInfo.HorizontalResolution = mDisplayModes[ModeNumber].Horizontal.Resolution;
-  Instance->ModeInfo.VerticalResolution = mDisplayModes[ModeNumber].Vertical.Resolution;
+
+  if (FixedPcdGetBool (PcdLcdRotateToLandscape)) {
+    Instance->ModeInfo.HorizontalResolution = mDisplayModes[ModeNumber].Vertical.Resolution;
+    Instance->ModeInfo.VerticalResolution = mDisplayModes[ModeNumber].Horizontal.Resolution;
+  } else {
+    Instance->ModeInfo.HorizontalResolution = mDisplayModes[ModeNumber].Horizontal.Resolution;
+    Instance->ModeInfo.VerticalResolution = mDisplayModes[ModeNumber].Vertical.Resolution;
+  }
+
   Instance->ModeInfo.PixelsPerScanLine = mDisplayModes[ModeNumber].Horizontal.Resolution;
   Instance->ModeInfo.PixelFormat = FixedPcdGet32 (PcdLcdPixelFormat);
   Instance->Mode.SizeOfInfo = sizeof (EFI_GRAPHICS_OUTPUT_MODE_INFORMATION);

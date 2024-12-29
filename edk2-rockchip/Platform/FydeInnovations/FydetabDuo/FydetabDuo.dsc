@@ -93,6 +93,11 @@
   gRK3588TokenSpaceGuid.PcdDp0LaneMux|{ 0x2, 0x3 }
 
   #
+  # Landscape graphics output
+  #
+  gRockchipTokenSpaceGuid.PcdLcdRotateToLandscape|TRUE
+
+  #
   # I2S
   #
   gRK3588TokenSpaceGuid.PcdI2S0Supported|TRUE

@@ -54,6 +54,7 @@
 
 [Pcd]
   gRockchipTokenSpaceGuid.PcdLcdPixelFormat
+  gRockchipTokenSpaceGuid.PcdLcdRotateToLandscape
 
 [FeaturePcd]
   gArmPlatformTokenSpaceGuid.PcdGopDisableOnExitBootServices
