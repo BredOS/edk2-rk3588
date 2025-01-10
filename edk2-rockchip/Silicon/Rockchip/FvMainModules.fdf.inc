@@ -31,6 +31,16 @@
   INF SecurityPkg/Hash2DxeCrypto/Hash2DxeCrypto.inf
 
   #
+  # ExitBootServices hook manager
+  #
+  INF Silicon/Rockchip/Drivers/ExitBootServicesHookDxe/ExitBootServicesHookDxe.inf
+
+  #
+  # Runtime Services state manager
+  #
+  INF Silicon/Rockchip/Drivers/RuntimeServicesManagerDxe/RuntimeServicesManagerDxe.inf
+
+  #
   # Status LED support
   #
 !if $(RK_STATUS_LED_ENABLE) == TRUE

@@ -539,6 +539,16 @@ FspiLib|Silicon/Rockchip/Library/FspiLib/FspiLib.inf
   SecurityPkg/Hash2DxeCrypto/Hash2DxeCrypto.inf
 
   #
+  # ExitBootServices hook manager
+  #
+  Silicon/Rockchip/Drivers/ExitBootServicesHookDxe/ExitBootServicesHookDxe.inf
+
+  #
+  # Runtime Services state manager
+  #
+  Silicon/Rockchip/Drivers/RuntimeServicesManagerDxe/RuntimeServicesManagerDxe.inf
+
+  #
   # Status LED support
   #
 !if $(RK_STATUS_LED_ENABLE) == TRUE

@@ -69,7 +69,7 @@ Note that this list is subject to change at any time as devices gain better supp
 ### Mainline compatibility mode
 | OS | Version | Tested/supported hardware | Notes |
 | --- | --- | --- | --- |
-| Generic upstream Linux | Kernel 6.10 or newer.<br> Tested with:<br> - Ubuntu 24.10<br> - Fedora Workstation 41 | Platform and kernel version dependent, see [Collabora's RK3588 upstream status](https://gitlab.collabora.com/hardware-enablement/rockchip-3588/notes-for-rockchip-3588/-/blob/main/mainline-status.md). | * Kernels older than 6.13 lack HDMI output. To work around this, see: [Device Tree configuration](#device-tree-configuration). |
+| Generic upstream Linux | Kernel 6.10 or newer.<br> Tested with:<br> - Ubuntu 24.10<br> - Fedora Workstation 41<br> - Fedora Workstation Rawhide | Platform and kernel version dependent, see [Collabora's RK3588 upstream status](https://gitlab.collabora.com/hardware-enablement/rockchip-3588/notes-for-rockchip-3588/-/blob/main/mainline-status.md). | * Kernels older than 6.13 lack HDMI output. To work around this, see: [Device Tree configuration](#device-tree-configuration). |
 
 > [!NOTE]
 > Mainline support is only available on [Platinum](#platinum) platforms.
@@ -316,6 +316,20 @@ This has been observed in cases where firmware was present on more than one devi
       `00E04C001234` is an example address. You can generate random and unique ones using: <https://www.macvendorlookup.com/mac-address-generator>
 
   **Note:** the number of eFuses is limited, thus MAC addresses can only be changed a few times.
+
+### Wi-Fi / Bluetooth not working on mainline Linux
+The most likely cause is missing upstream firmware support. Check `dmesg` for messages that indicate firmware load errors.
+
+This can usually be fixed by manually copying the necessary blobs to `/usr/lib/firmware`.
+
+For instance, on Khadas Edge2 with an onboard AP6275P module (BCM/SYN43752):
+```bash
+sudo wget https://github.com/armbian/firmware/raw/refs/heads/master/brcm/brcmfmac43752-pcie.bin -P /usr/lib/firmware/brcm/
+sudo wget https://github.com/armbian/firmware/raw/refs/heads/master/brcm/brcmfmac43752-pcie.clm_blob -P /usr/lib/firmware/brcm/
+sudo wget https://github.com/armbian/firmware/raw/refs/heads/master/brcm/brcmfmac43752-pcie.txt -P /usr/lib/firmware/brcm/
+sudo wget https://github.com/armbian/firmware/raw/refs/heads/master/brcm/BCM4362A2.hcd -P /usr/lib/firmware/brcm/
+```
+then reboot.
 
 ## Advanced troubleshooting
 The firmware will log detailed information to the serial console when using a debug version. See the [release notes](https://github.com/edk2-porting/edk2-rk3588/releases) for details on how to obtain this version.
