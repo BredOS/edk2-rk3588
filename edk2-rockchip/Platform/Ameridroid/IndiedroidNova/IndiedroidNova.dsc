@@ -27,6 +27,9 @@
   FLASH_DEFINITION               = Silicon/Rockchip/RK3588/RK3588.fdf
   RK_PLATFORM_FVMAIN_MODULES     = $(PLATFORM_DIRECTORY)/$(PLATFORM_NAME).Modules.fdf.inc
 
+  # GMAC is not exposed
+  DEFINE RK3588_GMAC_ENABLE = FALSE
+
   # No status LED on this platform.
   DEFINE RK_STATUS_LED_ENABLE = FALSE
 
@@ -75,13 +78,6 @@
   gRockchipTokenSpaceGuid.PcdRtc8563Bus|0x6
 
   #
-  # CPU Performance default values
-  #
-  gRK3588TokenSpaceGuid.PcdCPULClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_MAX)
-  gRK3588TokenSpaceGuid.PcdCPUB01ClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_MAX)
-  gRK3588TokenSpaceGuid.PcdCPUB23ClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_MAX)
-
-  #
   # PCIe/SATA/USB Combo PIPE PHY support flags and default values
   #
   gRK3588TokenSpaceGuid.PcdComboPhy0ModeDefault|$(COMBO_PHY_MODE_PCIE)
@@ -102,6 +98,14 @@
   # On-Board fan output
   #
   gRK3588TokenSpaceGuid.PcdHasOnBoardFanOutput|TRUE
+
+  #
+  # Display support flags and default values
+  #
+  gRK3588TokenSpaceGuid.PcdDisplayConnectors|{CODE({
+    VOP_OUTPUT_IF_HDMI0,
+    VOP_OUTPUT_IF_DP0
+  })}
 
 ################################################################################
 #

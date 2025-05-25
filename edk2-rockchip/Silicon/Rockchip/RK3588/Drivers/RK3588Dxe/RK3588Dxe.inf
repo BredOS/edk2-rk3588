@@ -1,7 +1,7 @@
 #
 #  Copyright (c) 2013 - 2014, ARM Ltd. All rights reserved.
 #  Copyright (c) 2018, Linaro Ltd. All rights reserved.
-#  Copyright (c) 2023-2024, Mario Bălănică <mariobalanica02@gmail.com>
+#  Copyright (c) 2023-2025, Mario Bălănică <mariobalanica02@gmail.com>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -25,6 +25,7 @@
   FanControl.c
   UsbDpPhy.c
   DebugSerialPort.c
+  Display.c
 
 [Packages]
   ArmPkg/ArmPkg.dec
@@ -57,6 +58,7 @@
 [Protocols]
   gEfiVariableWriteArchProtocolGuid               ## CONSUMES
   gEfiMemoryAttributeProtocolGuid                 ## CONSUMES
+  gEfiSimpleTextInputExProtocolGuid               ## CONSUMES
   gRk860xRegulatorProtocolGuid                    ## CONSUMES
   gRockchipPlatformConfigAppliedProtocolGuid      ## PRODUCES
 
@@ -106,6 +108,12 @@
   gRK3588TokenSpaceGuid.PcdFdtForceGop
   gRK3588TokenSpaceGuid.PcdFdtSupportOverridesDefault
   gRK3588TokenSpaceGuid.PcdFdtSupportOverrides
+  gRK3588TokenSpaceGuid.PcdFdtOverrideFixupDefault
+  gRK3588TokenSpaceGuid.PcdFdtOverrideFixup
+  gRK3588TokenSpaceGuid.PcdFdtOverrideBasePathDefault
+  gRK3588TokenSpaceGuid.PcdFdtOverrideBasePath
+  gRK3588TokenSpaceGuid.PcdFdtOverrideOverlayPathDefault
+  gRK3588TokenSpaceGuid.PcdFdtOverrideOverlayPath
 
   gRK3588TokenSpaceGuid.PcdHasOnBoardFanOutput
   gRK3588TokenSpaceGuid.PcdCoolingFanState
@@ -118,6 +126,22 @@
 
   gRK3588TokenSpaceGuid.PcdI2S0Supported
   gRK3588TokenSpaceGuid.PcdI2S1Supported
+
+  gRK3588TokenSpaceGuid.PcdDisplayConnectors
+  gRK3588TokenSpaceGuid.PcdDisplayConnectorsMask
+  gRK3588TokenSpaceGuid.PcdDisplayModePresetDefault
+  gRK3588TokenSpaceGuid.PcdDisplayModePreset
+  gRK3588TokenSpaceGuid.PcdDisplayModeCustomDefault
+  gRK3588TokenSpaceGuid.PcdDisplayModeCustom
+  gRK3588TokenSpaceGuid.PcdDisplayConnectorsPriority
+  gRK3588TokenSpaceGuid.PcdDisplayForceOutputDefault
+  gRK3588TokenSpaceGuid.PcdDisplayForceOutput
+  gRK3588TokenSpaceGuid.PcdDisplayDuplicateOutputDefault
+  gRK3588TokenSpaceGuid.PcdDisplayDuplicateOutput
+  gRK3588TokenSpaceGuid.PcdDisplayRotationDefault
+  gRK3588TokenSpaceGuid.PcdDisplayRotation
+  gRK3588TokenSpaceGuid.PcdHdmiSignalingModeDefault
+  gRK3588TokenSpaceGuid.PcdHdmiSignalingMode
 
 [Guids]
   gRK3588DxeFormSetGuid

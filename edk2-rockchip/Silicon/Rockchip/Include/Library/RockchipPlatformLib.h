@@ -1,7 +1,7 @@
 /** @file
 *
 *  Copyright (c) 2021, Rockchip Limited. All rights reserved.
-*  Copyright (c) 2023-2024, Mario Bălănică <mariobalanica02@gmail.com>
+*  Copyright (c) 2023-2025, Mario Bălănică <mariobalanica02@gmail.com>
 *
 *  SPDX-License-Identifier: BSD-2-Clause-Patent
 *
@@ -26,20 +26,15 @@ SdhciEmmcIoMux (
 
 VOID
 EFIAPI
-EnableBacklight (
-  IN BOOLEAN en
-  );
-
-VOID
-EFIAPI
-EnablePWM (
-  IN BOOLEAN en
+EdpEnableBacklight (
+  IN UINT32   Id,
+  IN BOOLEAN  Enable
   );
 
 VOID
 EFIAPI
 GmacIomux (
-  IN UINT32 Id
+  IN UINT32  Id
   );
 
 VOID
@@ -64,7 +59,7 @@ Rk806Configure (
 VOID
 EFIAPI
 SetCPULittleVoltage (
-  IN UINT32 Microvolts
+  IN UINT32  Microvolts
   );
 
 VOID
@@ -76,13 +71,13 @@ NorFspiIomux (
 VOID
 EFIAPI
 NorFspiEnableClock (
-  UINT32 *CruBase
+  UINT32  *CruBase
   );
 
 VOID
 EFIAPI
 I2cIomux (
-   UINT32 id
+  UINT32  id
   );
 
 VOID
@@ -100,21 +95,27 @@ Usb2PhyResume (
 VOID
 EFIAPI
 PcieIoInit (
-  UINT32 Segment
+  UINT32  Segment
   );
 
 VOID
 EFIAPI
 PciePowerEn (
-  UINT32 Segment,
-  BOOLEAN Enable
+  UINT32   Segment,
+  BOOLEAN  Enable
   );
 
 VOID
 EFIAPI
 PciePeReset (
-  UINT32 Segment,
-  BOOLEAN Enable
+  UINT32   Segment,
+  BOOLEAN  Enable
+  );
+
+VOID
+EFIAPI
+HdmiTxIomux (
+  IN UINT32  Id
   );
 
 VOID
@@ -126,7 +127,7 @@ PwmFanIoSetup (
 VOID
 EFIAPI
 PwmFanSetSpeed (
-  IN UINT32 Percentage
+  IN UINT32  Percentage
   );
 
 VOID
@@ -138,13 +139,13 @@ PlatformInitLeds (
 VOID
 EFIAPI
 PlatformSetStatusLed (
-  IN BOOLEAN Enable
+  IN BOOLEAN  Enable
   );
 
 CONST EFI_GUID *
 EFIAPI
 PlatformGetDtbFileGuid (
-  IN UINT32 CompatMode
+  IN UINT32  CompatMode
   );
 
 VOID

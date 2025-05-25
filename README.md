@@ -12,7 +12,7 @@ Platinum devices are considered to have the best overall support, based on facto
 - Device Tree and peripherals compatible with mainline Linux. [**Required**]
 - Active interest from the vendor in supporting their hardware.
 - Hardware design choices:
-  - If an Ethernet port is present, Realtek PCIe NIC (for netboot) or RK GMAC. [**Required**]
+  - If an Ethernet port is present, Realtek PCIe NIC or integrated GMAC. [**Required**]
   - SPI NOR flash for dedicated firmware storage. [Preferred]
 
 Bronze devices may have limitations such as:
@@ -69,7 +69,7 @@ Note that this list is subject to change at any time as devices gain better supp
 ### Mainline compatibility mode
 | OS | Version | Tested/supported hardware | Notes |
 | --- | --- | --- | --- |
-| Generic upstream Linux | Kernel 6.10 or newer.<br> Tested with:<br> - Ubuntu 24.10<br> - Fedora Workstation 41<br> - Fedora Workstation Rawhide | Platform and kernel version dependent, see [Collabora's RK3588 upstream status](https://gitlab.collabora.com/hardware-enablement/rockchip-3588/notes-for-rockchip-3588/-/blob/main/mainline-status.md). | * Kernels older than 6.13 lack HDMI output. To work around this, see: [Device Tree configuration](#device-tree-configuration). |
+| Generic upstream Linux | Kernel 6.10 or newer.<br> Tested with:<br> - Ubuntu 24.10<br> - Fedora Workstation 41<br> - Fedora Workstation Rawhide | Platform and kernel version dependent, see [Collabora's RK3588 upstream status](https://gitlab.collabora.com/hardware-enablement/rockchip-3588/notes-for-rockchip-3588/-/blob/main/mainline-status.md). | * Kernels older than 6.15 lack display output. To work around this, see: [Device Tree configuration](#device-tree-configuration). |
 
 > [!NOTE]
 > Mainline support is only available on [Platinum](#platinum) platforms.
@@ -87,11 +87,11 @@ Note that this list is subject to change at any time as devices gain better supp
 | PCIe 3.0 / 2.1                        | 🟢 Working     | |
 | SATA                                  | 🟢 Working     | |
 | SD/eMMC                               | 🟢 Working     | |
-| HDMI output                           | 🟡 Partial     | Single display with mode limited at 1080p 60 Hz |
-| DisplayPort output (USB-C)            | 🟡 Partial     | Mode fixed at 1080p 60 Hz, only works in one orientation of the Type-C port. Some displays may not work regardless. |
+| HDMI output                           | 🟢 Working     | |
+| DisplayPort output (USB-C)            | 🟡 Partial     | No hot-plug detect & EDID. Only works in one orientation of the Type-C port. Some displays may not work regardless. |
 | eDP output                            | 🟡 Partial     | Disabled, requires manual configuration depending on the platform and panel. |
 | DSI output                            | 🟢 Working     | Only enabled on Fydetab Duo. Requires manual configuration depending on the platform and panel. |
-| GMAC Ethernet                         | 🔴 Not working | Only brought-up for OS usage |
+| GMAC Ethernet                         | 🟢 Working     | |
 | Realtek PCIe Ethernet                 | 🟢 Working     | Some platforms don't have MAC addresses set, networking may not work in that case. |
 | Low-speed (GPIO/UART/I2C/SPI/PWM)     | 🟢 Working     | UART2 console available at 1500000 baud rate |
 | SPI NOR Flash                         | 🟢 Working     | |
@@ -109,7 +109,7 @@ Note that this list is subject to change at any time as devices gain better supp
 * Quality power supply that can provide at least 15 W. Depending on the peripherals you use, more may be needed.
 
   Note: on Mixtile Blade 3, a fixed voltage *higher than* 5V must be supplied. The board cannot power any external peripherals if the input voltage is just 5V. USB-PD negotiation is not supported by firmware.
-* HDMI or DisplayPort (USB-C) screen capable of at least 1080p 60Hz.
+* HDMI (preferred) or DisplayPort (USB-C) screen.
 * Optionally, if display is not available or for debugging purposes, an UART adapter capable of 1500000 baud rate (e.g. USB CH340, CP2104).
 
 ## 2. Download the firmware image
@@ -120,7 +120,7 @@ If your platform is not yet supported, using an image meant for another device i
 ## 3. Flash the firmware
 UEFI can be flashed to either an SPI NOR flash, SD card or eMMC module:
 * For removable SD or eMMC (easiest), you can simply use balenaEtcher, RPi Imager or dd.
-* For SPI NOR or soldered eMMC, instructions can be found at: <https://wiki.radxa.com/Rock5/install/spi>.
+* For SPI NOR or soldered eMMC, instructions can be found at: <https://docs.radxa.com/en/rock5/lowlevel-development/bootloader_spi_flash>.
 
   In short, you can flash the image from Linux booted on the device or by using RKDevTool on another computer. The latter requires entering Maskrom mode on the device. The way to do this slightly varies across platforms, refer to your vendor documentation.
 
@@ -142,15 +142,27 @@ Also check the configuration options described below, some of which may need to 
 If you experience any issues, please see the [Troubleshooting](#troubleshooting) section.
 
 # Configuration settings
-The UEFI provides a few configuration options, like CPU frequency, PCIe/SATA selection for an M.2 port, fan control, etc. These can be viewed and changed using the UI configuration menu (under `Device Manager` -> `Rockchip Platform Configuration`).
+The UEFI provides a few configuration options, like CPU frequency, PCIe/SATA selection for an M.2 port, fan control, etc. These can be viewed and changed using the UI configuration menu (under `Device Manager`->`Rockchip Platform Configuration`).
 
 Configuration through the user interface is fairly straightforward and help/navigation information is provided around the menus.
 
 ## Tips
-* CPU clocks are set to 816 MHz (boot default) on platforms without a cooling fan included. If you have adequate cooling, go to the configuration menu -> `CPU Performance` and set all Cluster Presets to `Maximum`.
+### Boot time optimization
+* If there are unused M.2/PCIe slots, you can disable them to skip initialization: `Device Manager`->`Rockchip Platform Configuration`->`PCIe/SATA/USB Combo PIPE PHY` and set the relevant PHYs to `Unconnected`. Do the same for `PCI Express 3.0` by setting `Support State` to `Disabled`.
+
+* Auto boot time-out can be decreased from `Boot Maintenance Manager`.
+
+* If network boot is not used, it can be disabled: `Device Manager`->`Network Stack Configuration` then uncheck `Network Stack`.
+
+* If you do not need the ability to hot-plug displays or use DisplayPort while in the firmware: `Device Manager`->`Rockchip Platform Configuration`->`Display` and set `Force Output` to `Disabled`. This will skip display initialization when none is connected.
+
+* By default, the firmware connects all boot devices regardless of whether they are needed for the current boot. This is done to address potential compatibility issues and generally takes a negligible amount of time, thus it is recommended to not change it. However, it is still possible to do so: `Boot Maintenance Manager`->`Boot Discovery Policy`.
+
+### Linux boot
+* If you're getting a Synchronous Exception when booting certain distros, go to `Device Manager`->`EFI Memory Attribute Protocol` and uncheck `Enable Protocol`.
 
 ## Device Tree configuration
-For rich Linux support, it is recommended to enable Device Tree mode. You can do so by going to the configuration menu -> `ACPI / Device Tree` and setting `Config Table Mode` to `Device Tree`.
+For rich Linux support, it is recommended to enable Device Tree mode. You can do so by going to `Device Manager`->`Rockchip Platform Configuration`->`ACPI / Device Tree` and setting `Config Table Mode` to `Device Tree`.
 
 The firmware provides two compatibility modes:
 * `Vendor` - compatible with Rockchip SDK Linux 5.10/6.1 kernel only.
@@ -159,22 +171,31 @@ The firmware provides two compatibility modes:
 [Platinum](#platinum) platforms will have the `Mainline` option enabled by default, while [Bronze](#bronze) ones will fall back to `Vendor`.
 
 > [!TIP]
-> In `Mainline` mode with generic Linux kernels older than 6.13, the HDMI output will not be usable. To use the UEFI-initialized display instead, go to the configuration menu -> `ACPI / Device Tree` and enable `Force UEFI GOP Display`. Note that GPU acceleration cannot work in this mode.
+> In `Mainline` mode with generic Linux kernels older than 6.15, the HDMI output will not be usable. To use the UEFI-initialized display instead, go to `Device Manager`->`Rockchip Platform Configuration`->`ACPI / Device Tree` and enable `Force UEFI GOP Display`. Note that GPU acceleration cannot work in this mode.
 
 ### Custom Device Tree Blob (DTB) override and overlays
-It is also possible to provide a custom DTB and overlays. To enable this, go to the configuration menu -> `ACPI / Device Tree` and set `Support DTB override & overlays` to `Enabled`.
+It is also possible to provide a custom DTB and overlays. This is useful in cases where the firmware DTB is outdated, does not match the kernel used or for testing purposes. To enable overrides, go to `Device Manager`->`Rockchip Platform Configuration`->`ACPI / Device Tree` and set `Support DTB override & overlays` to `Enabled`.
 
-The firmware will now look for overrides in the partition of a selected boot option / OS loader. In most cases, this will be the first FAT32 EFI System Partition.
+The firmware will now look for overrides in all supported file systems / partitions (FAT, ext4) on the selected boot device.
 
-**Important:** The `dtb` directory must be placed at the root of the partition. It should not be inside any sub-directory.
+**Important:**
+* The paths below are relative to the root of the partition. They must not be inside any sub-directory.
+* All overrides (base DTB and overlays) must be stored within a single partition. Using a base DTB from one partition and overlays from another is not allowed.
 
-* The base DTB must be located at `\dtb\base\<PLATFORM-DT-NAME>.dtb`.
+The base DTB can be placed in:
+* `\dtb`
+* `\dtb\base`
+* `\dtb\rockchip` - Fedora images have the kernel DTBs in this location on the second ext4 boot partition.
 
-* The overlays can be placed in:
-  * `\dtb\overlays` - will be applied first, regardless of the platform.
-  * `\dtb\overlays\<PLATFORM-DT-NAME>` - will be applied only to the specified platform.
+and must have the `<PLATFORM-DT-NAME>.dtb` file name.
 
-  and must have the `.dtbo` extension.
+The overlays can be placed in:
+* `\dtb\overlays` - will be applied first, regardless of the platform.
+* `\dtb\overlays\<PLATFORM-DT-NAME>` - will be applied only to the specified platform.
+
+and must have the `.dtbo` extension.
+
+In addition to the default paths above, it is possible to specify custom ones via the `Preferred Base DTB Path` and `Preferred Overlays Path` setup options in the menu described above.
 
 `<PLATFORM-DT-NAME>` can be:
 | Name                                    | Platform                      |
@@ -202,15 +223,16 @@ The firmware will now look for overrides in the partition of a selected boot opt
 | `rk3588s-nanopi-m6`                     | NanoPi M6                     |
 | `rk3588-hinlink-h88k`                   | H88K                          |
 
-In the absence of a custom base DTB override, the overlays are applied on top of the firmware-provided DTB.
+**Notes:**
+* The firmware applies some fix-ups to the DTB depending on the user settings (e.g. PCIe/SATA/USB selection, making SATA overlays redundant). These fix-ups are not applied when providing overrides by other means, such as the Grub `devicetree` command.
 
-The firmware applies some fix-ups to its own DTB depending on the user settings (e.g. PCIe/SATA/USB selection, making SATA overlays redundant). These fix-ups are not applied to a custom base DTB - overlays must be used instead.
+* In the absence of a base DTB override, the overlays are applied on top of the firmware-provided DTB.
 
-If the application of an overlay fails (e.g. due to it being invalid in regard to the base DTB), all overlays are discarded, including those that got applied up to that point.
+* If the application of an overlay fails (e.g. due to incompatibility with the base DTB), all other overlays are discarded.
 
-If the custom base DTB is invalid, the firmware-provided one will be passed to the OS instead.
+* If the base DTB override is invalid, the firmware-provided one will be passed to the OS instead.
 
-This entire process is logged to the [serial console](#advanced-troubleshooting). There's currently no other way to see potential errors.
+* This process is logged to the [serial console](#advanced-troubleshooting). It is the only way to see potential errors.
 
 # Updating the firmware
 If the storage is only used for UEFI and nothing else, simply download the latest image and flash it as described in the [Getting started](#getting-started) section.
@@ -225,6 +247,20 @@ dd if=FIRMWARE.img of=DESTINATION bs=512 skip=64 seek=64 conv=notrunc
 `DESTINATION` is the destination storage that you wish to update the firmware on. E.g. `/dev/sdb`.
 
 Here we skip the GPT and copy the firmware starting at offset 0x8000 (`64` blocks * `512` bytes block size) until its end. See [Flash layout](#flash-layout) for more details.
+
+## Flash SPI NOR from the UEFI Shell
+1) Copy the firmware image to a FAT32 partition on a storage drive and connect it to the device.
+
+2) Launch the UEFI Shell (press <kbd>F1</kbd> during boot or go to `Boot Manager`->`UEFI Shell`).
+
+3) Navigate to the partition / file system containing the firmware image:
+   * Use the `map` command to list all mounted file systems, e.g. `fs0:`, `fs1:`, etc. Type the file system name and press <kbd>Enter</kbd> to change directory to it.
+
+   * If you're unsure which file system to use, run `ls fsX:` (replace `X` with the actual number) to list its contents.
+
+4) Run `sf updatefile FIRMWARE.img 0x0` and wait for the update process to complete.
+
+5) Reboot the device.
 
 # Troubleshooting
 
@@ -260,11 +296,13 @@ Additionally, holding the Recovery (or volume up) button while powering on the d
 Make sure you've flashed the firmware correctly and that it is the version designed for your device. In most cases this is the culprit.
 
 Assuming the firmware loads fine:
-* The display must support a resolution of at least 1080p at 60 Hz.
-* If you're using HDMI and the system has two ports, only one will work. Try both.
+* The display must support a resolution of at least 640 x 480 at 60 Hz.
+
+* Try booting without any display connected, then plug it in after a couple of seconds (when the status LED pattern changes). This will force the firmware to output at the minimum supported resolution. You can then increase the resolution by going to `Device Manager`->`Rockchip Platform Configuration`->`Display`.
+
 * If you're using USB-C to DisplayPort, only one orientation of the USB-C connector will work. Check both.
 
-If you are not able to get any display output, the only way to interact with UEFI is via the [serial console](#advanced-troubleshooting).
+If you are still not able to get any display output, the only way to interact with UEFI is via the [serial console](#advanced-troubleshooting).
 
 ### Configuration settings do not get saved
 This has been observed in cases where firmware was present on more than one device (SPI NOR, eMMC or SD). This is not a supported scenario, because UEFI will be unable to accurately determine the boot device it belongs to. The solution is to unplug or erase devices that may have other firmware on them.
@@ -275,7 +313,7 @@ This has been observed in cases where firmware was present on more than one devi
 * Make sure the power supply and cable are good.
 
 ### Networking does not work
-* Only Realtek PCIe and USB controllers are supported. Native Gigabit provided by RK3588 isn't.
+* Only integrated Gigabit Ethernet (GMAC), Realtek PCIe and USB controllers are supported.
 
 * Some boards with Realtek NICs do not have a MAC address set at factory and will show-up as being all zeros in UEFI, possibly preventing the adapter from obtaining an IP address.
 

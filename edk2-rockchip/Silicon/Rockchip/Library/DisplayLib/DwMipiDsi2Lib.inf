@@ -41,13 +41,15 @@
   Silicon/Rockchip/RockchipPkg.dec
   Silicon/Rockchip/RK3588/RK3588.dec
 
-[BuildOptions]
-
 [Pcd]
+  gRK3588TokenSpaceGuid.PcdDisplayConnectorsMask
 
 [Protocols]
   gRockchipConnectorProtocolGuid        ## PRODUCES
   gRockchipDsiPanelProtocolGuid         ## CONSUMES
 
+[BuildOptions]
+  GCC:*_*_AARCH64_CC_FLAGS  = -Wno-error=unused-function -Wno-error=unused-variable
+
 [Depex]
-  TRUE
+  gRockchipPlatformConfigAppliedProtocolGuid

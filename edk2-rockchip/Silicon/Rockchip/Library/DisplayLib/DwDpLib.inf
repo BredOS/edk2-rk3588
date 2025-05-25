@@ -41,10 +41,14 @@
 [BuildOptions]
 
 [Pcd]
+  gRK3588TokenSpaceGuid.PcdDisplayConnectorsMask
 
 [Protocols]
   gRockchipConnectorProtocolGuid        ## PRODUCES
   gDpPhyProtocolGuid                    ## CONSUMES
 
+[BuildOptions]
+  GCC:*_*_AARCH64_CC_FLAGS  = -Wno-error=unused-function -Wno-error=unused-variable
+
 [Depex]
-  TRUE
+  gRockchipPlatformConfigAppliedProtocolGuid

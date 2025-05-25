@@ -72,13 +72,6 @@
   gRockchipTokenSpaceGuid.PcdRtc8563Bus|0x6
 
   #
-  # CPU Performance default values
-  #
-  gRK3588TokenSpaceGuid.PcdCPULClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_MAX)
-  gRK3588TokenSpaceGuid.PcdCPUB01ClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_MAX)
-  gRK3588TokenSpaceGuid.PcdCPUB23ClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_MAX)
-
-  #
   # PCIe/SATA/USB Combo PIPE PHY support flags and default values
   #
   # The PCIe 3x4 controller exposed at the M.2 M key slot is limited
@@ -101,6 +94,14 @@
   #
   gRK3588TokenSpaceGuid.PcdGmac1Supported|TRUE
   gRK3588TokenSpaceGuid.PcdGmac1TxDelay|0x43
+
+  #
+  # Display support flags and default values
+  #
+  gRK3588TokenSpaceGuid.PcdDisplayConnectors|{CODE({
+    VOP_OUTPUT_IF_HDMI0,
+    VOP_OUTPUT_IF_DP0
+  })}
 
 ################################################################################
 #

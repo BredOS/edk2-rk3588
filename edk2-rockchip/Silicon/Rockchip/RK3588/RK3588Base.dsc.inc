@@ -2,7 +2,7 @@
 #
 #  Copyright (c) 2014-2018, Linaro Limited. All rights reserved.
 #  Copyright (c) 2021-2022, Rockchip Limited. All rights reserved.
-#  Copyright (c) 2023-2024, Mario Bălănică <mariobalanica02@gmail.com>
+#  Copyright (c) 2023-2025, Mario Bălănică <mariobalanica02@gmail.com>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -61,6 +61,10 @@
   DEFINE FDT_COMPAT_MODE_VENDOR         = 1
   DEFINE FDT_COMPAT_MODE_MAINLINE       = 2
 
+  DEFINE HDMI_SIGNALING_MODE_AUTO  = 0
+  DEFINE HDMI_SIGNALING_MODE_DVI   = 1
+  DEFINE HDMI_SIGNALING_MODE_HDMI  = 2
+
   #
   # Silicon/Rockchip/RK3588/Drivers/RK3588Dxe/CpuPerformance.h
   #
@@ -89,6 +93,9 @@
 !ifndef RK_AHCI_ENABLE
   DEFINE RK_AHCI_ENABLE             = TRUE
 !endif
+!ifndef RK_ANALOGIX_DP_ENABLE
+  DEFINE RK_ANALOGIX_DP_ENABLE      = FALSE
+!endif
 !ifndef RK_DW_HDMI_QP_ENABLE
   DEFINE RK_DW_HDMI_QP_ENABLE       = TRUE
 !endif
@@ -98,6 +105,9 @@
   #
 !ifndef RK3588_PCIE_ENABLE
   DEFINE RK3588_PCIE_ENABLE         = TRUE
+!endif
+!ifndef RK3588_GMAC_ENABLE
+  DEFINE RK3588_GMAC_ENABLE         = TRUE
 !endif
 
   #
@@ -189,8 +199,8 @@
   # UART2 - Serial Terminal
   DEFINE SERIAL_BASE = 0xFEB50000 # UART2
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase|$(SERIAL_BASE)
-  gHisiTokenSpaceGuid.PcdSerialPortSendDelay|500000
-  gHisiTokenSpaceGuid.PcdUartClkInHz|24000000
+  gRockchipTokenSpaceGuid.PcdSerialPortSendDelay|500000
+  gRockchipTokenSpaceGuid.PcdUartClkInHz|24000000
 
   # SPI - SPI2 for test
   gRockchipTokenSpaceGuid.SpiRK806BaseAddr|0xFEB20000
@@ -239,21 +249,11 @@
   gRockchipTokenSpaceGuid.PcdDwc3Size|0x400000
 
   #
-  # Display
-  #
-  gRockchipTokenSpaceGuid.PcdLcdPixelFormat|0x00000001
-  gRockchipTokenSpaceGuid.PcdEdpId|0x00000000 #edp0
-  #gRockchipTokenSpaceGuid.PcdEdpId|0x00000001 #edp1
-  gRockchipTokenSpaceGuid.PcdHdmiId|0x00000000 #hdmi0
-  #gRockchipTokenSpaceGuid.PcdHdmiId|0x00000001 #hdmi1
-  gRockchipTokenSpaceGuid.PcdHdmiDDCI2CPinMux|0x00000000 #hdmitx_i2c_m0
-
-  #
   # CPU Performance default values
   #
-  gRK3588TokenSpaceGuid.PcdCPULClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_BOOTDEFAULT)
-  gRK3588TokenSpaceGuid.PcdCPUB01ClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_BOOTDEFAULT)
-  gRK3588TokenSpaceGuid.PcdCPUB23ClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_BOOTDEFAULT)
+  gRK3588TokenSpaceGuid.PcdCPULClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_MAX)
+  gRK3588TokenSpaceGuid.PcdCPUB01ClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_MAX)
+  gRK3588TokenSpaceGuid.PcdCPUB23ClusterClockPresetDefault|$(CPU_PERF_CLUSTER_CLOCK_PRESET_MAX)
 
   #
   # Cooling Fan definitions
@@ -286,6 +286,43 @@
   gRK3588TokenSpaceGuid.PcdFdtCompatModeDefault|$(FDT_COMPAT_MODE_MAINLINE)
   gRK3588TokenSpaceGuid.PcdFdtForceGopDefault|FALSE
   gRK3588TokenSpaceGuid.PcdFdtSupportOverridesDefault|FALSE
+  gRK3588TokenSpaceGuid.PcdFdtOverrideFixupDefault|TRUE
+  gRK3588TokenSpaceGuid.PcdFdtOverrideBasePathDefault|L""
+  gRK3588TokenSpaceGuid.PcdFdtOverrideOverlayPathDefault|L""
+
+  #
+  # Display support flags and default values
+  #
+  gRK3588TokenSpaceGuid.PcdDisplayConnectors|{ 0x0 }
+  gRK3588TokenSpaceGuid.PcdDisplayModePresetDefault|{CODE({
+    DISPLAY_MODE_NATIVE
+  })}
+  gRK3588TokenSpaceGuid.PcdDisplayModeCustomDefault|{CODE({
+    .OscFreq     = 25175,
+    .HActive     = 640,
+    .HFrontPorch = 16,
+    .HSync       = 96,
+    .HBackPorch  = 48,
+    .HSyncActive = 0,
+    .VActive     = 480,
+    .VFrontPorch = 10,
+    .VSync       = 2,
+    .VBackPorch  = 33,
+    .VSyncActive = 0,
+  })}
+  gRK3588TokenSpaceGuid.PcdDisplayForceOutputDefault|TRUE
+  gRK3588TokenSpaceGuid.PcdDisplayDuplicateOutputDefault|FALSE
+  gRK3588TokenSpaceGuid.PcdDisplayRotationDefault|0
+  gRK3588TokenSpaceGuid.PcdHdmiSignalingModeDefault|$(HDMI_SIGNALING_MODE_AUTO)
+
+  #
+  # Network support flags and default values
+  #
+  gRockchipTokenSpaceGuid.PcdNetworkStackEnabledDefault|TRUE
+  gRockchipTokenSpaceGuid.PcdNetworkStackIpv4EnabledDefault|TRUE
+  gRockchipTokenSpaceGuid.PcdNetworkStackIpv6EnabledDefault|TRUE
+  gRockchipTokenSpaceGuid.PcdNetworkStackPxeBootEnabledDefault|TRUE
+  gRockchipTokenSpaceGuid.PcdNetworkStackHttpBootEnabledDefault|TRUE
 
 [PcdsPatchableInModule]
   gEfiMdePkgTokenSpaceGuid.PcdUartDefaultBaudRate|1500000
@@ -339,6 +376,9 @@
   gRK3588TokenSpaceGuid.PcdFdtCompatMode|L"FdtCompatMode"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdFdtCompatModeDefault
   gRK3588TokenSpaceGuid.PcdFdtForceGop|L"FdtForceGop"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdFdtForceGopDefault
   gRK3588TokenSpaceGuid.PcdFdtSupportOverrides|L"FdtSupportOverrides"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdFdtSupportOverridesDefault
+  gRK3588TokenSpaceGuid.PcdFdtOverrideFixup|L"FdtOverrideFixup"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdFdtOverrideFixupDefault
+  gRK3588TokenSpaceGuid.PcdFdtOverrideBasePath|L"FdtOverrideBasePath"|gRK3588DxeFormSetGuid|0x0|{ 0x0 }
+  gRK3588TokenSpaceGuid.PcdFdtOverrideOverlayPath|L"FdtOverrideOverlayPath"|gRK3588DxeFormSetGuid|0x0|{ 0x0 }
 
   #
   # Cooling Fan
@@ -351,6 +391,18 @@
   #
   gRK3588TokenSpaceGuid.PcdUsbDpPhy0Usb3State|L"UsbDpPhy0Usb3State"|gRK3588DxeFormSetGuid|0x0|$(USBDP_PHY_USB3_STATE_ENABLED)
   gRK3588TokenSpaceGuid.PcdUsbDpPhy1Usb3State|L"UsbDpPhy1Usb3State"|gRK3588DxeFormSetGuid|0x0|$(USBDP_PHY_USB3_STATE_ENABLED)
+
+  #
+  # Display
+  #
+  gRK3588TokenSpaceGuid.PcdDisplayConnectorsMask|L"DisplayConnectorsMask"|gRK3588DxeFormSetGuid|0x0|0|BS
+  gRK3588TokenSpaceGuid.PcdDisplayModePreset|L"DisplayModePreset"|gRK3588DxeFormSetGuid|0x0|{ 0x0 }
+  gRK3588TokenSpaceGuid.PcdDisplayModeCustom|L"DisplayModeCustom"|gRK3588DxeFormSetGuid|0x0|{ 0x0 }
+  gRK3588TokenSpaceGuid.PcdDisplayConnectorsPriority|L"DisplayConnectorsPriority"|gRK3588DxeFormSetGuid|0x0|{ 0x0 }
+  gRK3588TokenSpaceGuid.PcdDisplayForceOutput|L"DisplayForceOutput"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdDisplayForceOutputDefault
+  gRK3588TokenSpaceGuid.PcdDisplayDuplicateOutput|L"DisplayDuplicateOutput"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdDisplayDuplicateOutputDefault
+  gRK3588TokenSpaceGuid.PcdDisplayRotation|L"DisplayRotation"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdDisplayRotationDefault
+  gRK3588TokenSpaceGuid.PcdHdmiSignalingMode|L"HdmiSignalingMode"|gRK3588DxeFormSetGuid|0x0|gRK3588TokenSpaceGuid.PcdHdmiSignalingModeDefault
 
 ################################################################################
 #
@@ -378,9 +430,17 @@
   Silicon/Rockchip/RK3588/Drivers/UsbDpPhyDxe/UsbDpPhyDxe.inf
 
   #
-  # GMAC Init Driver
+  # Rockchip GMAC Support
   #
+!if $(RK3588_GMAC_ENABLE) == TRUE
   Silicon/Rockchip/RK3588/Drivers/GmacPlatformDxe/GmacPlatformDxe.inf
+  Silicon/Synopsys/DesignWare/Drivers/DwcEqosSnpDxe/DwcEqosSnpDxe.inf {
+    <PcdsFixedAtBuild>
+      # 32-bit DMA limit
+      gEmbeddedTokenSpaceGuid.PcdDmaDeviceOffset|0x00000000
+      gEmbeddedTokenSpaceGuid.PcdDmaDeviceLimit|0xffffffff
+  }
+!endif
 
   #
   # ACPI Support

@@ -1,7 +1,7 @@
 ## @file
 #
 #  Copyright (c) 2021-2022, Rockchip Limited. All rights reserved.
-#  Copyright (c) 2023-2024, Mario Bălănică <mariobalanica02@gmail.com>
+#  Copyright (c) 2023-2025, Mario Bălănică <mariobalanica02@gmail.com>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -73,7 +73,7 @@
   #
   # Arm GIC
   #
-  INF ArmPkg/Drivers/ArmGic/ArmGicDxe.inf
+  INF ArmPkg/Drivers/ArmGicDxe/ArmGicV3Dxe.inf
 
   #
   # Timer
@@ -112,13 +112,14 @@
 !if $(RK_PCA9555_ENABLE) == TRUE
   INF Silicon/Rockchip/Drivers/Pca9555Dxe/Pca9555Dxe.inf
 !endif
-  # INF Silicon/Rockchip/Drivers/I2c/I2cDemoDxe/I2cDemoDxe.inf
 
   #
   # Display Support
   #
   INF Silicon/Rockchip/Drivers/Vop2Dxe/Vop2Dxe.inf
-  # INF Silicon/Rockchip/Library/DisplayLib/AnalogixDpLib.inf
+!if $(RK_ANALOGIX_DP_ENABLE) == TRUE
+  INF Silicon/Rockchip/Library/DisplayLib/AnalogixDpLib.inf
+!endif
 !if $(RK_DW_HDMI_QP_ENABLE) == TRUE
   INF Silicon/Rockchip/Library/DisplayLib/DwHdmiQpLib.inf
 !endif
@@ -186,6 +187,7 @@
   INF MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
   INF MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
   INF FatPkg/EnhancedFatDxe/Fat.inf
+!include Features/Ext4Pkg/Ext4.fdf.inc
   INF MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
 
   #
@@ -200,6 +202,11 @@
 
 !if $(NETWORK_ENABLE) == TRUE
   #
+  # Network Stack Configuration Driver
+  #
+  INF Silicon/Rockchip/Drivers/NetworkStackConfigDxe/NetworkStackConfigDxe.inf
+
+  #
   # Realtek PCIe UNDI Driver
   #
   INF Drivers/Realtek/Bus/Pcie/PcieNetworking/RtkUndiDxe.inf
@@ -208,11 +215,6 @@
   # Realtek USB UNDI Driver
   #
   INF Drivers/Realtek/Bus/Usb/UsbNetworking/RtkUsbUndiDxe.inf
-
-  #
-  # AX88772 Ethernet Driver for Apple Ethernet Adapter
-  #
-  INF Drivers/ASIX/Bus/Usb/UsbNetworking/Ax88772c/Ax88772c.inf
 !endif
 
   #
@@ -223,6 +225,7 @@
   #
   # Bds
   #
+  INF MdeModulePkg/Universal/BootManagerPolicyDxe/BootManagerPolicyDxe.inf
   INF MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
   INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
   INF MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
@@ -236,12 +239,6 @@
 !ifdef $(INCLUDE_TFTP_COMMAND)
   INF ShellPkg/DynamicCommand/TftpDynamicCommand/TftpDynamicCommand.inf
 !endif #$(INCLUDE_TFTP_COMMAND)
-
-  # I2C Demo application
-  # INF Silicon/Rockchip/Applications/I2cDemoTest/I2cDemoTest.inf
-
-  # SPI Flash Cmd application
-  # INF Silicon/Rockchip/Applications/SpiTool/SpiFlashCmd.inf
 
   # Maskrom Reset application
   INF Silicon/Rockchip/Applications/MaskromReset/MaskromReset.inf

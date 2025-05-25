@@ -1,6 +1,6 @@
 /** @file
  *
- *  Copyright (c) 2023-2024, Mario Bălănică <mariobalanica02@gmail.com>
+ *  Copyright (c) 2023-2025, Mario Bălănică <mariobalanica02@gmail.com>
  *
  *  SPDX-License-Identifier: BSD-2-Clause-Patent
  *
@@ -19,6 +19,96 @@
  */
 #string STR_DISABLED                                       #language en-US "Disabled"
 #string STR_ENABLED                                        #language en-US "Enabled"
+#string STR_PLUS_SIGN                                      #language en-US "+"
+#string STR_MINUS_SIGN                                     #language en-US "-"
+
+/*
+ * Display configuration
+ */
+#string STR_DISPLAY_FORM_TITLE                             #language en-US "Display"
+#string STR_DISPLAY_FORM_HELP                              #language en-US "Configure the display output."
+#string STR_DISPLAY_FORM_SUBTITLE                          #language en-US "Note: Press LCtrl+LShift+F6 at any time to reboot with default display settings."
+
+#string STR_DISPLAY_MODE_PRESET_PROMPT                     #language en-US "Preferred Mode"
+#string STR_DISPLAY_MODE_PRESET_HELP                       #language en-US "Choose the preferred display mode."
+#string STR_DISPLAY_MODE_NATIVE                            #language en-US "Native"
+#string STR_DISPLAY_MODE_CUSTOM                            #language en-US "Custom"
+#string STR_DISPLAY_MODE_640_480_60                        #language en-US "640 x 480 @ 60 Hz"
+#string STR_DISPLAY_MODE_800_600_60                        #language en-US "800 x 600 @ 60 Hz"
+#string STR_DISPLAY_MODE_1024_768_60                       #language en-US "1024 x 768 @ 60 Hz"
+#string STR_DISPLAY_MODE_1152_864_60                       #language en-US "1152 x 864 @ 60 Hz"
+#string STR_DISPLAY_MODE_1280_720_60                       #language en-US "1280 x 720 @ 60 Hz"
+#string STR_DISPLAY_MODE_1280_768_60                       #language en-US "1280 x 768 @ 60 Hz"
+#string STR_DISPLAY_MODE_1280_800_60                       #language en-US "1280 x 800 @ 60 Hz"
+#string STR_DISPLAY_MODE_1280_960_60                       #language en-US "1280 x 960 @ 60 Hz"
+#string STR_DISPLAY_MODE_1280_1024_60                      #language en-US "1280 x 1024 @ 60 Hz"
+#string STR_DISPLAY_MODE_1360_768_60                       #language en-US "1360 x 768 @ 60 Hz"
+#string STR_DISPLAY_MODE_1400_1050_60                      #language en-US "1400 x 1050 @ 60 Hz"
+#string STR_DISPLAY_MODE_1440_900_60                       #language en-US "1440 x 900 @ 60 Hz"
+#string STR_DISPLAY_MODE_1600_900_60                       #language en-US "1600 x 900 @ 60 Hz"
+#string STR_DISPLAY_MODE_1600_1200_60                      #language en-US "1600 x 1200 @ 60 Hz"
+#string STR_DISPLAY_MODE_1680_1050_60                      #language en-US "1680 x 1050 @ 60 Hz"
+#string STR_DISPLAY_MODE_1920_1080_60                      #language en-US "1920 x 1080 @ 60 Hz"
+#string STR_DISPLAY_MODE_1920_1200_60                      #language en-US "1920 x 1200 @ 60 Hz"
+#string STR_DISPLAY_MODE_2048_1152_60                      #language en-US "2048 x 1152 @ 60 Hz"
+#string STR_DISPLAY_MODE_2560_1080_60                      #language en-US "2560 x 1080 @ 60 Hz"
+#string STR_DISPLAY_MODE_2560_1440_60                      #language en-US "2560 x 1440 @ 60 Hz"
+#string STR_DISPLAY_MODE_2560_1600_60                      #language en-US "2560 x 1600 @ 60 Hz"
+#string STR_DISPLAY_MODE_3440_1440_60                      #language en-US "3440 x 1440 @ 60 Hz"
+#string STR_DISPLAY_MODE_3840_2160_30                      #language en-US "3840 x 2160 @ 30 Hz"
+#string STR_DISPLAY_MODE_3840_2160_60                      #language en-US "3840 x 2160 @ 60 Hz"
+#string STR_DISPLAY_MODE_4096_2160_30                      #language en-US "4096 x 2160 @ 30 Hz"
+#string STR_DISPLAY_MODE_4096_2160_60                      #language en-US "4096 x 2160 @ 60 Hz"
+
+#string STR_DISPLAY_MODE_CUSTOM_PIXEL_CLOCK                #language en-US "Pixel Clock (kHz)"
+#string STR_DISPLAY_MODE_CUSTOM_HORIZONTAL_ACTIVE          #language en-US "Horizontal Active"
+#string STR_DISPLAY_MODE_CUSTOM_HORIZONTAL_FRONT_PORCH     #language en-US "Horizontal Front Porch"
+#string STR_DISPLAY_MODE_CUSTOM_HORIZONTAL_SYNC_WIDTH      #language en-US "Horizontal Sync Width"
+#string STR_DISPLAY_MODE_CUSTOM_HORIZONTAL_BACK_PORCH      #language en-US "Horizontal Back Porch"
+#string STR_DISPLAY_MODE_CUSTOM_HORIZONTAL_SYNC_POLARITY   #language en-US "Horizontal Sync Polarity"
+#string STR_DISPLAY_MODE_CUSTOM_VERTICAL_ACTIVE            #language en-US "Vertical Active"
+#string STR_DISPLAY_MODE_CUSTOM_VERTICAL_FRONT_PORCH       #language en-US "Vertical Front Porch"
+#string STR_DISPLAY_MODE_CUSTOM_VERTICAL_SYNC_WIDTH        #language en-US "Vertical Sync Width"
+#string STR_DISPLAY_MODE_CUSTOM_VERTICAL_BACK_PORCH        #language en-US "Vertical Back Porch"
+#string STR_DISPLAY_MODE_CUSTOM_VERTICAL_SYNC_POLARITY     #language en-US "Vertical Sync Polarity"
+
+#string STR_DISPLAY_CONNECTORS_PRIORITY_PROMPT             #language en-US "Connector Priority"
+#string STR_DISPLAY_CONNECTORS_PRIORITY_HELP               #language en-US "Choose the order in which display connectors are probed. The first display detected will be used as the primary output."
+#string STR_DISPLAY_CONNECTOR_HDMI0                        #language en-US "HDMI 0"
+#string STR_DISPLAY_CONNECTOR_HDMI1                        #language en-US "HDMI 1"
+#string STR_DISPLAY_CONNECTOR_EDP0                         #language en-US "eDP 0"
+#string STR_DISPLAY_CONNECTOR_EDP1                         #language en-US "eDP 1"
+#string STR_DISPLAY_CONNECTOR_DP0                          #language en-US "DP 0"
+#string STR_DISPLAY_CONNECTOR_DP1                          #language en-US "DP 1"
+#string STR_DISPLAY_CONNECTOR_MIPI0                        #language en-US "DSI 0"
+#string STR_DISPLAY_CONNECTOR_MIPI1                        #language en-US "DSI 1"
+
+#string STR_DISPLAY_FORCE_OUTPUT_PROMPT                    #language en-US "Force Output"
+#string STR_DISPLAY_FORCE_OUTPUT_HELP                      #language en-US "Enable or disable the display output even when none is connected.\n\n"
+                                                                           "If the serial console is used instead, this option can be disabled to allow OSes to prefer it when possible."
+
+#string STR_DISPLAY_DUPLICATE_OUTPUT_PROMPT                #language en-US "Duplicate Primary Display"
+#string STR_DISPLAY_DUPLICATE_OUTPUT_HELP                  #language en-US "Enable or disable duplication of the primary display output on other connected displays.\n"
+                                                                           "Note that this will use the same mode/resolution everywhere, even if it is not supported by the other displays."
+
+#string STR_DISPLAY_ROTATION_PROMPT                        #language en-US "Rotation"
+#string STR_DISPLAY_ROTATION_HELP                          #language en-US "Choose the display output rotation in degrees.\n\n"
+                                                                           "Note: This option only takes effect in the boot environment. If set to a value other than 0, the OS will be unable to use the UEFI GOP service and will require a native display driver."
+#string STR_DISPLAY_ROTATION_0                             #language en-US "0"
+#string STR_DISPLAY_ROTATION_90                            #language en-US "90"
+#string STR_DISPLAY_ROTATION_180                           #language en-US "180"
+#string STR_DISPLAY_ROTATION_270                           #language en-US "270"
+
+#string STR_DISPLAY_CONNECTOR_TYPE_HDMI                    #language en-US "HDMI"
+
+#string STR_HDMI_SIGNALING_MODE_PROMPT                     #language en-US "Signaling Mode"
+#string STR_HDMI_SIGNALING_MODE_HELP                       #language en-US "Choose the preferred HDMI signaling mode.\n\n"
+                                                                           "Auto - determines mode from the connected display, otherwise falls back to DVI.\n\n"
+                                                                           "DVI - disables all data packets. This option may help the display use full range RGB and disable overscan to match the firmware output.\n\n"
+                                                                           "HDMI - allows transmission of data packets."
+#string STR_HDMI_SIGNALING_MODE_AUTO                       #language en-US "Auto"
+#string STR_HDMI_SIGNALING_MODE_DVI                        #language en-US "DVI"
+#string STR_HDMI_SIGNALING_MODE_HDMI                       #language en-US "HDMI"
 
 /*
  * CPU Performance configuration
@@ -168,10 +258,42 @@
 #string STR_FDT_COMPAT_MODE_MAINLINE                       #language en-US "Mainline"
 
 #string STR_FDT_FORCE_GOP_PROMPT                           #language en-US "Force UEFI GOP Display"
-#string STR_FDT_FORCE_GOP_HELP                             #language en-US "This option allows using the basic display output provided by UEFI GOP (HDMI/DP/DSI) on Linux kernels older than 6.13, which lack native driver support."
+#string STR_FDT_FORCE_GOP_HELP                             #language en-US "This option allows using the basic display output provided by UEFI GOP (HDMI/DP/DSI) on older Linux kernels, which lack native driver support."
 
 #string STR_FDT_SUPPORT_OVERRIDES_PROMPT                   #language en-US "Support DTB override & overlays"
 #string STR_FDT_SUPPORT_OVERRIDES_HELP                     #language en-US "Enable or disable support for overriding the firmware-provided DTB and installing overlays.\n\nCheck firmware documentation for more details."
+
+#string STR_FDT_OVERRIDE_SUBTITLE                          #language en-US "DTB Override"
+
+#string STR_FDT_OVERRIDE_FIXUP_PROMPT                      #language en-US "Firmware Fix-ups"
+#string STR_FDT_OVERRIDE_FIXUP_HELP                        #language en-US "Enable or disable firmware fix-ups for the DTB override."
+
+#string STR_FDT_OVERRIDE_BASE_PATH_PROMPT                  #language en-US "Preferred Base DTB Path"
+#string STR_FDT_OVERRIDE_BASE_PATH_HELP                    #language en-US "Enter the preferred file or directory path for the base DTB override, relative to the file system root.\n\n"
+                                                                           "Once a boot device is selected, the firmware will scan all the supported file systems on it (FAT, ext4) and try to load the specified override.\n\n"
+                                                                           "- If a directory path is specified, the platform FDT file name will be appended to it (<PLATFORM-DT-NAME>).\n"
+                                                                           "- If a file path is specified, it will be used as is.\n"
+                                                                           "- If no override exists, the firmware-provided DTB will be used instead.\n\n"
+                                                                           "Examples:\n"
+                                                                           " \\dtbs\n"
+                                                                           " \\dtbs\\my-board.dtb\n\n"
+                                                                           "Default alternative paths:\n"
+                                                                           " \\dtb\n"
+                                                                           " \\dtb\\base\n"
+                                                                           " \\dtb\\rockchip\n\n"
+                                                                           "To reset this option to the default value, set it to a space character, save and reboot."
+
+#string STR_FDT_OVERRIDE_OVERLAY_PATH_PROMPT               #language en-US "Preferred Overlays Path"
+#string STR_FDT_OVERRIDE_OVERLAY_PATH_HELP                 #language en-US "Enter the preferred directory path for the DTB overlays, relative to the file system root.\n\n"
+                                                                           "Once a boot device is selected, the firmware will scan all the supported file systems on it (FAT, ext4) and try to load all overlays in the specified directory.\n\n"
+                                                                           "- If the installation of an overlay fails, all other overlays will be discarded.\n\n"
+                                                                           "Examples:\n"
+                                                                           " \\my-overlays\n"
+                                                                           " \\dtbs\\overlays\n\n"
+                                                                           "Default alternative paths:\n"
+                                                                           " \\dtb\\overlays\n"
+                                                                           " \\dtb\\overlays\\<PLATFORM-DT-NAME>\n\n"
+                                                                           "To reset this option to the default value, set it to a space character, save and reboot."
 
 /*
  * Cooling fan configuration
