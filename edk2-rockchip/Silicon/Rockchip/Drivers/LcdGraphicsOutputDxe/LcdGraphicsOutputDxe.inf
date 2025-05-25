@@ -58,13 +58,6 @@
 
 [FeaturePcd]
   gArmPlatformTokenSpaceGuid.PcdGopDisableOnExitBootServices
-  gRK3588TokenSpaceGuid.PcdDisplayModePreset
-  gRK3588TokenSpaceGuid.PcdDisplayModeCustom
-  gRK3588TokenSpaceGuid.PcdDisplayConnectors
-  gRK3588TokenSpaceGuid.PcdDisplayConnectorsPriority
-  gRK3588TokenSpaceGuid.PcdDisplayForceOutput
-  gRK3588TokenSpaceGuid.PcdDisplayDuplicateOutput
-  gRK3588TokenSpaceGuid.PcdDisplayRotation
 
 [Depex]
   gEfiCpuArchProtocolGuid AND
