@@ -13,9 +13,9 @@
 #
 ################################################################################
 [Defines]
-  PLATFORM_NAME                  = OrangePi5Max
+  PLATFORM_NAME                  = OrangePi5Ultra
   PLATFORM_VENDOR                = OrangePi
-  PLATFORM_GUID                  = 8d614edc-3f4b-448e-84cb-6690c73fadb3
+  PLATFORM_GUID                  = 9e725fdc-4a5c-459f-95de-7801d84fcdb4
   PLATFORM_VERSION               = 0.2
   DSC_SPECIFICATION              = 0x00010019
   OUTPUT_DIRECTORY               = Build/$(PLATFORM_NAME)
@@ -58,11 +58,11 @@
 
 [PcdsFixedAtBuild.common]
   # SMBIOS platform config
-  gRockchipTokenSpaceGuid.PcdPlatformName|"Orange Pi 5 Max"
+  gRockchipTokenSpaceGuid.PcdPlatformName|"Orange Pi 5 Ultra"
   gRockchipTokenSpaceGuid.PcdPlatformVendorName|"Orange Pi"
   gRockchipTokenSpaceGuid.PcdFamilyName|"Orange Pi 5"
-  gRockchipTokenSpaceGuid.PcdProductUrl|"http://www.orangepi.org/html/hardWare/computerAndMicrocontrollers/details/Orange-Pi-5-Max.html"
-  gRockchipTokenSpaceGuid.PcdDeviceTreeName|"rk3588-orangepi-5-max"
+  gRockchipTokenSpaceGuid.PcdProductUrl|"http://www.orangepi.org/"
+  gRockchipTokenSpaceGuid.PcdDeviceTreeName|"rk3588-orangepi-5-ultra"
 
   # I2C
   gRockchipTokenSpaceGuid.PcdI2cSlaveAddresses|{ 0x42, 0x43, 0x51 }
@@ -106,8 +106,7 @@
 # Display support flags and default values
 #
    gRK3588TokenSpaceGuid.PcdDisplayConnectors|{CODE({
-      VOP_OUTPUT_IF_HDMI1,
-      VOP_OUTPUT_IF_HDMI0
+      VOP_OUTPUT_IF_HDMI1
    })}
 
 ################################################################################
